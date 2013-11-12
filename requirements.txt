@@ -1,0 +1,2 @@
+# list of required packages (comparable to composer.json)
+pymongo

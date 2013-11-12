@@ -1,0 +1,22 @@
+db = {
+    'db_name' : '',
+    'db_port' : 27017,
+    'db_host' : 'localhost',
+    'db_user' : '',
+    'db_pass' : ''
+}
+
+#weather
+weather = {
+    'api' : {
+        # api token for web service
+        'token' : '',
+        'endpoint': 'http://',
+
+        # configured list of cities to collect weather from
+        'cities': [
+            'De Bilt', 'Amsterdam', 'Maastricht', 'Groningen', 'Leeuwarden', 'Almere', 'Alkmaar',
+            'Middelburg', 'Breda', 'Eindhoven'
+        ]
+    }
+}
