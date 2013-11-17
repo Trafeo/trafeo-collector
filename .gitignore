@@ -36,3 +36,6 @@ nosetests.xml
 .pydevproject
 
 main.conf
+
+# hide log files
+logs/*

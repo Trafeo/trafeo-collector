@@ -38,8 +38,10 @@ class Collect:
 
             # get the data from the api and store it in mongo
             city_data =  self.api_client.get_weather_by_city(city)
-            self.db.weather.insert({
-                'ts' : time.time(),
-                'data': city_data,
-                'city': city
-            })
+
+            if city_data is not None:
+                self.db.weather.insert({
+                    'ts' : time.time(),
+                    'data': city_data,
+                    'city': city
+                })
