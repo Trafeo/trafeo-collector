@@ -53,7 +53,11 @@ class Collector:
         db_name = self.config['db']['db_name']
         mongo_client = MongoClient('localhost', self.config['db']['db_port'])
 
+
         self.db_client = mongo_client[db_name]
+
+        if self.config['db']['db_user'] is not '':
+            self.db_client.authenticate(self.config['db']['db_user'], self.config['db']['db_pass'])
 
     def set_logger(self):
         logger = logging.getLogger(__name__)
