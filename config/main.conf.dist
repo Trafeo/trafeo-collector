@@ -6,6 +6,10 @@ db = {
     'db_pass' : ''
 }
 
+logger = {
+    'log_dir' : '/var/log/collect'
+}
+
 #weather
 weather = {
     'api' : {

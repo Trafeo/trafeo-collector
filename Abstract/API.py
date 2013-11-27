@@ -4,12 +4,17 @@ from abc import ABCMeta
 import urllib
 import urllib2
 import time
+import logging
 
 class API:
     __metaclass__ = ABCMeta
 
     # limit one request per n seconds
     rate_limit = 0.5
+
+    # a logger instance
+    logger = None
+
 
     def execute_request(self, uri, data=None):
         """
@@ -26,7 +31,7 @@ class API:
             response_obj = response.read()
 
         except urllib2.HTTPError as http_error:
-            print 'API call failed: %s (http error)' % http_error
+            raise Exception('API call failed: %s (http error)' % http_error)
 
         return response_obj
 
@@ -67,3 +72,24 @@ class API:
             raise Exception('Invalid data format: %s, only json and xml are valid data types for this api stack' % data_format)
 
         self.data_format = data_format
+
+
+
+    def set_logger(self, logger):
+        """
+        @type logger: logging
+        @param logger: The logger to set in this API
+        @return:
+        """
+        if not isinstance(logger, logging.getLoggerClass()):
+            print 'You did not pass a valid instance of logging to this API client'
+            exit(1)
+
+        self.logger = logger
+
+    def get_logger(self):
+        """
+
+        @return logging: Returns a logger instance
+        """
+        return self.logger
