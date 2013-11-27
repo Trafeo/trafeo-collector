@@ -24,12 +24,8 @@ class Client(AbstractAPI.API):
         """
         self.api_endpoint = endpoint
         self.api_token = token
+        self.set_logger(logger)
 
-        if not isinstance(logger, logging.getLoggerClass()):
-            print 'You did not pass a valid instance of logging to this API client'
-            exit(1)
-
-        self.logger = logger
 
     def get_weather_by_city(self, city):
         result = None
@@ -57,3 +53,4 @@ class Client(AbstractAPI.API):
         })
 
         return self.build_request_uri(self.api_endpoint, final_arguments)
+

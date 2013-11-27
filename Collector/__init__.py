@@ -8,6 +8,7 @@ try:
     import os
     import ConfigParser
     import logging
+    from shutil import copyfile
 except ImportError as e:
     print 'Fatal: %s' % e.message
     exit(1)
@@ -42,6 +43,16 @@ class Collector:
         """
         self.config = config
         self.setup_db()
+
+        # if the log rotator does not exist, create it
+        if not os.path.exists('/etc/logrotate.d/collect'):
+            copyfile(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'config', 'logrotate-collect')),
+                     '/etc/logrotate.d/collect')
+
+        # create the directory for logging
+        if not os.path.exists('/var/log/collect'):
+            os.mkdir('/var/log/collect')
+
         self.set_logger()
 
 
@@ -60,24 +71,34 @@ class Collector:
             self.db_client.authenticate(self.config['db']['db_user'], self.config['db']['db_pass'])
 
     def set_logger(self):
+        """
+        Set the logger instance (void)
+        @return:
+        """
         logger = logging.getLogger(__name__)
         logger.setLevel(logging.INFO)
 
-        log_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'logs'))
+        # try to get the logger directory from the config, if it does not exist, fall back to the default
+        log_path = '/var/log/collect'
 
         if not os.path.exists(log_path):
-            print 'Logger directory %s not found' % log_path
+            os.mkdir(log_path)
 
         # create a file handler
-        handler = logging.FileHandler(os.path.join(log_path, 'error.log'))
-        handler.setLevel(logging.ERROR)
+        error_handler = logging.FileHandler(os.path.join(log_path, 'error.log'))
+        error_handler.setLevel(logging.ERROR)
+
+        info_handler = logging.FileHandler(os.path.join(log_path, 'information.log'))
+        info_handler.setLevel(logging.INFO)
 
         # create a logging format
         formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
+        error_handler.setFormatter(formatter)
+        info_handler.setFormatter(formatter)
 
         # add the handlers to the logger
-        logger.addHandler(handler)
+        logger.addHandler(error_handler)
+        logger.addHandler(info_handler)
 
         self.logger = logger
 

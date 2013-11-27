@@ -28,8 +28,9 @@ def main():
         print ''
         print 'Retrieving weather data...'
 
-        #todo make option to manually specify cities to process
+        #todo make option to manually specify cities to process? (maybe)
         manual_cities = []
+        logger = None
 
         try:
             collector = Collector.Collector(config)
@@ -38,19 +39,29 @@ def main():
 
             weather_api_client = WeatherAPI.Client(config['weather']['api']['token'], config['weather']['api']['endpoint'], logger)
             weather_collector = WeatherCollect.Collect(config, weather_api_client, db)
+            cities = config['weather']['api']['cities']
 
             #if there is a list of cities passed, process them, otherwise use the configured list
             if len(manual_cities) > 0:
                 weather_collector.set_cities(manual_cities)
             else:
-                weather_collector.set_cities(config['weather']['api']['cities'])
+                weather_collector.set_cities(cities)
+
+            logger.info('Processing the following cities for weather data: %s', ", ".join(cities))
 
             # start collecting the weather data
-            weather_collector.collect()
+            stats = weather_collector.collect()
+
+            # log information regarding collection
+            logger.info('Collected statistics for %d cities successfully, %d failed.' % (stats['success'], stats['failed']))
 
         except Exception as exc:
-            print 'A general exception has occurred: %s' % exc.message
+
+            if logger is not None:
+                logger.error(exc.message)
+
             raise exc
+            exit(1)
 
         print '\n Resuming collecion task in %d seconds.' % args.interval
         # rest until the interval timer has expired
