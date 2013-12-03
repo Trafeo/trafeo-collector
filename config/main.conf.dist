@@ -24,3 +24,46 @@ weather = {
         ]
     }
 }
+
+# Traffic configuration
+traffic = {
+
+    # API details from TomTom
+    'api' : {
+        'url': 'https://api.tomtom.com/lbs/services/trafficIcons/3/'
+        'key': 'x4w2zaauuqg5mmrxtpe22njp'
+    }
+
+    # Area and Zoom level to collect traffic
+    'region' : {
+        # Minimum Y value/latitude for the bounding box (currectly for NL only)
+        'minY' = 50.75
+        
+        # Minimum X value/longitude for the bounding box (currectly for NL only)
+        'minX' = 3.3
+
+        # Maximum Y value/latitude for the bounding box (currectly for NL only)
+        'maxY' = 53.58
+
+        # Maximum X value/longitude for the bounding box (currectly for NL only)
+        'maxX' = 7.23
+
+        # Zoom level (0 - 18)
+        'zoom' = 10
+    }
+
+    # All miscellaneous attributes 
+
+    # Reference value for the state of traffic at a particular time, obtained from the Viewport API call. Use -1 to get the most recent traffic information.
+    'traffic_model_id' = -1
+
+    # Projection standrad
+    'projection': 'EPSG4326'
+
+    # Query Language
+    'language': 'en'
+    
+    # Response content type
+    'content_type' = 'json'
+
+}
