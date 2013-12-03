@@ -23,11 +23,17 @@ class API:
         @param data:
         @return:
         """
-        response_obj = None
 
         time.sleep(self.rate_limit)
         try:
-            response = urllib2.urlopen(uri, data)
+
+            if data is not None:
+                encoded_data = urllib.urlencode(data)
+            else:
+                encoded_data = None
+
+            request = urllib2.Request(uri, encoded_data)
+            response = urllib2.urlopen(request)
             response_obj = response.read()
 
         except urllib2.HTTPError as http_error:
@@ -37,7 +43,8 @@ class API:
 
     def build_request_uri(self, url, arguments):
         """
-
+        
+        @param url:
         @param arguments:
         @return:
         """
