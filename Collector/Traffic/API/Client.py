@@ -47,7 +47,6 @@ class Client(AbstractAPI.API):
             if item not in region_items:
                 raise Exception('Wrong region configuration item')
 
-
         if len(region) is not len(region_items):
             raise 'Missing configuration item, required region config : %s' % region
 
@@ -68,8 +67,9 @@ class Client(AbstractAPI.API):
 
         #build the request URI
         request_uri = "%s/s1/%2.2f,%2.2f,%2.2f,%2.2f/%d/%d/%s" % (base_url, region['minY'], region['minX'],
-                                                                region['maxY'], region['maxX'], region['zoom'],
-                                                                self.config['traffic_model_id'], 'json')
+                                                                  region['maxY'], region['maxX'], region['zoom'],
+                                                                  self.config['traffic_model_id'],
+                                                                  self.config['content_type'])
 
         return {
             'uri': request_uri,

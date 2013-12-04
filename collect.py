@@ -6,7 +6,7 @@ import Collector
 from Collector.Weather import Collect as WeatherCollect
 import Collector.Weather.API.Client as WeatherAPI
 
-#from Collector.Weather import Collect as WeatherCollect
+from Collector.Traffic import Collect as TrafficCollect
 import Collector.Traffic.API.Client as TrafficAPI
 
 
@@ -53,6 +53,10 @@ def main():
                 manual_cities = []
 
                 weather_api_client = WeatherAPI.Client(config['weather']['api']['token'], config['weather']['api']['endpoint'], logger)
+
+                # set the rate limit to 2 seconds per request
+                weather_api_client.set_rate_limit(2)
+
                 weather_collector = WeatherCollect.Collect(config, weather_api_client, db)
                 cities = config['weather']['api']['cities']
 
@@ -67,7 +71,8 @@ def main():
                 stats = weather_collector.collect()
 
                 # log information regarding collection
-                logger.info('Collected statistics for %d cities successfully, %d failed.' % (stats['success'], stats['failed']))
+                logger.info('Collected statistics for %d cities successfully, %d failed.' % (stats['success'],
+                                                                                             stats['failed']))
             else:
                 print '\nSkipping weather collection...'
 
@@ -75,7 +80,23 @@ def main():
                 logger.info('Starting collection of traffic data')
                 print '\nRetrieving traffic data...'
                 traffic_api_client = TrafficAPI.Client(config['traffic'], logger)
-                print traffic_api_client.collect_traffic_by_region(config['traffic']['region'])
+                traffic_collector = TrafficCollect.Collect(config, traffic_api_client, db)
+
+                if len(config['traffic']['regions']) > 0:
+
+                    # add the regions to the collector
+                    for region in config['traffic']['regions']:
+                        region_name = region.keys()[0]
+                        traffic_collector.add_region(region_name, region)
+
+                    # start collecting the data
+                    stats = traffic_collector.collect()
+
+                    # log information regarding collection
+                    logger.info('Collection for %d regions successfully, %d failed.' % (stats['success'],
+                                                                                        stats['failed']))
+                else:
+                    print '\nNo regions configured, not processing traffic information'
 
             else:
                 print '\nSkipping traffic collection...'

@@ -43,7 +43,7 @@ class API:
 
     def build_request_uri(self, url, arguments):
         """
-        
+
         @param url:
         @param arguments:
         @return:

@@ -34,24 +34,27 @@ traffic = {
         'key': ''
     },
 
-    # Area and Zoom level to collect traffic
-    'region': {
-        # Minimum Y value/latitude for the bounding box (currectly for NL only)
-        'minY': 50.75,
-        
-        # Minimum X value/longitude for the bounding box (currectly for NL only)
-        'minX': 3.3,
+    # regions to collect traffic from
+    'regions': [
+        {
+            'netherlands': {
+                # Minimum Y value/latitude for the bounding box (currectly for NL only)
+                'minY': 50.75,
 
-        # Maximum Y value/latitude for the bounding box (currectly for NL only)
-        'maxY': 53.58,
+                # Minimum X value/longitude for the bounding box (currectly for NL only)
+                'minX': 3.3,
 
-        # Maximum X value/longitude for the bounding box (currectly for NL only)
-        'maxX': 7.23,
+                # Maximum Y value/latitude for the bounding box (currectly for NL only)
+                'maxY': 53.58,
 
-        # Zoom level (0 - 18)
-        'zoom': 10,
-    },
+                # Maximum X value/longitude for the bounding box (currectly for NL only)
+                'maxX': 7.23,
 
+                # Zoom level (0 - 18)
+                'zoom': 10,
+            }
+        }
+    ],
     # All miscellaneous attributes 
 
     # Reference value for the state of traffic at a particular time, obtained from the Viewport API call. Use -1 to get the most recent traffic information.

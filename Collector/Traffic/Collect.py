@@ -1,12 +1,12 @@
 __author__ = 'Stephen Hoogendijk'
-import Collector.Weather.API.Client as API
+import Collector.Traffic.API.Client as API
 import time
 
 class Collect:
 
     config = None
     api_client = None
-    cities = None
+    regions = {}
     db = None
     logger = None
 
@@ -22,22 +22,23 @@ class Collect:
         self.config = config
         self.api_client = api_client
         self.db = db
+        self.logger = api_client.logger
 
         if not isinstance(api_client, API.Client):
             raise TypeError('Passed API client not a valid API client, type given: %s' % type(api_client))
 
 
 
-    def set_cities(self, cities):
+    def add_region(self, name, region):
         """
-        Set the list of cities to process
-        @param cities:
+        Add a region to process
+        @param region:
         @return:
         """
-        if type(cities) is not list or len(cities) < 1:
+        if type(region) is not dict or len(region) < 1:
            raise Exception('Invalid list of cities provided')
 
-        self.cities = cities
+        self.regions[name] = region[name]
         return self
 
     def collect(self):
@@ -47,22 +48,30 @@ class Collect:
             'failed': 0
         }
 
-        for city in self.cities:
-            print '=> Collecting data for: %s' % city
+        if len(self.regions) > 0:
 
-            # get the data from the api and store it in mongo
-            city_data = self.api_client.get_weather_by_city(city)
+            for region_name in self.regions:
+                region = self.regions[region_name]
 
-            if city_data is not None:
-                self.db.weather.insert({
-                    'ts' : time.time(),
-                    'data': city_data,
-                    'city': city
-                })
-                result['success'] += 1
+                print '=> Collecting traffic data for: %s' % region_name.capitalize()
+                self.logger.info('Collecting traffic data for %s' % region_name.capitalize())
 
-            else:
-                result['failed'] += 1
+                # get the data from the api and store it in mongo
+                traffic_data = self.api_client.collect_traffic_by_region(region)
+
+                if traffic_data is not None:
+                    # save the traffic in mongodb
+                    self.db.traffic.insert({
+                        'ts': time.time(),
+                        'data': traffic_data,
+                        'region_info': region,
+                        'region_name': region_name
+                    })
+                    result['success'] += 1
+
+                else:
+                    self.logger.error('Traffic collection failed for %s' % region_name)
+                    result['failed'] += 1
 
 
         return result
